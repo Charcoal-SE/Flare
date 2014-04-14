@@ -6,8 +6,8 @@ Number,Tag,Description
 5,FW,Foreign word
 6,IN,Preposition or subordinating conjunction
 7,JJ,Adjective
-8,JJR,Adjective, comparative
-9,JJS,Adjective, superlative
+8,JJR,Comparative adjective
+9,JJS,Superlative adjective
 10,LS,List item marker
 11,MD,Modal
 12,NN,Noun, singular or mass
