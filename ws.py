@@ -8,10 +8,11 @@ import itertools
 ws = websocket.create_connection("ws://qa.sockets.stackexchange.com/")
 ws.send("155-questions-active")
 
+h = HTMLParser.HTMLParser()
+
 while True:
   a=ws.recv()
   d=json.loads(json.loads(a)["data"])
-  h = HTMLParser.HTMLParser()
   title = h.unescape(d["titleEncodedFancy"])
   print title
 
