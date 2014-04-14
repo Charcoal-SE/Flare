@@ -3,6 +3,7 @@ import threading
 import json,os,sys,getpass,time
 import HTMLParser
 import nltk
+import itertools
 
 ws = websocket.create_connection("ws://qa.sockets.stackexchange.com/")
 ws.send("155-questions-active")
@@ -16,4 +17,13 @@ while True:
 
   tokens = nltk.word_tokenize(title)
   tagged = nltk.pos_tag(tokens)
-  print tagged[1][1]
+
+  tags = []
+
+  for word in tagged:
+	tags.append(word[1])
+
+  groupedtags = [list(g) for k, g in itertools.groupby(sorted(tags))]
+
+  for taggroup in groupedtags:
+  	print str(len(taggroup)) + " x " + taggroup[0]
