@@ -51,6 +51,8 @@ while True:
 
 		tags = tags + ','.join(taggroup) + ','
 
+	tags = tags.strip(",")
+
 	cmd = "INSERT INTO titles(title, site, url, wordTags) VALUES(%s, %s, %s, %s)"
 
 	cursor.execute(cmd, (title, site, link, tags))
