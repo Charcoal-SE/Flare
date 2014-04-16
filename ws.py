@@ -22,13 +22,10 @@ while True:
 	a=ws.recv()
 	d=json.loads(json.loads(a)["data"])
 	title = h.unescape(d["titleEncodedFancy"])
+	site = d["siteBaseHostAddress"]
+	link = d["url"]
 
-	cmd = "INSERT INTO titles(title) VALUES(%s)"
-
-	cursor.execute(cmd, (title, ))
-	cnx.commit()
-
-	print(title)
+	print title
 
 	tokens = nltk.word_tokenize(title)
 	tagged = nltk.pos_tag(tokens)
@@ -36,9 +33,11 @@ while True:
 	tags = []
 
 	for word in tagged:
-	tags.append(word[1])
+		tags.append(word[1])
 
 	groupedtags = [list(g) for k, g in itertools.groupby(sorted(tags))]
+
+	tags = ""
 
 	for taggroup in groupedtags:
 
@@ -49,3 +48,10 @@ while True:
 			description = "unknown";
 
 		print str(len(taggroup)) + " x " + taggroup[0] + " (" + description + ")"
+
+		tags = tags + ','.join(taggroup) + ','
+
+	cmd = "INSERT INTO titles(title, site, url, wordTags) VALUES(%s, %s, %s, %s)"
+
+	cursor.execute(cmd, (title, site, link, tags))
+	cnx.commit()
