@@ -7,23 +7,35 @@ import mysql.connector
 
 import config #Where we keep our passwords and stuff
 
-cnx = mysql.connector.connect(user=config.MySQLUsername(), password=config.MySQLPassword(), host=config.MySQLHost(), database=config.MySQLDatabase())
-cnx.query("SELECT VERSION()")
-print con.use_result()
+cnx = mysql.connector.connect(user=config.MySQLUsername(), password=config.MySQLPassword(), host=config.MySQLHost(), database=config.MySQLDatabase(), buffered=True)
+cursor = cnx.cursor()
+query = ("SELECT Title, Id FROM " + sys.argv[1] + " LIMIT 100");
+cursor.execute(query)
+
+for (Title, Id) in cursor:
+	print Title
+	tokens = nltk.word_tokenize(Title)
+	tagged = nltk.pos_tag(tokens)
+
+	tags = []
+
+	for word in tagged:
+		tags.append(word[1])
+
+	tags = sorted(tags)
+
+	print tags
+
+	cmd = "UPDATE " + sys.argv[1] + "SET wordTags='%s' WHERE Id=%s"
+
+	cursor.execute(cmd, (tags, Id, ))
+
+	print cursor.lastrowid
+
+cnx.commit()
 sys.exit()
 
-h = HTMLParser.HTMLParser()
-
-code_to_descriptions = {"CC" : "Coordinating conjunction", "CD" : "Cardinal number", "DT" : "Determiner", "EX" : "Existential there", "FW" : "Foreign word", "IN" : "Preposition or subordinating conjunction", "JJ" : "Adjective", "JJR" : "Comparative adjective", "JJS" : "Superlative adjective", "LS" : "List item marker", "MD" : "Modal", "NN" : "Singular or mass noun", "NNS" : "Plural noun", "NNP" : "Singular proper noun", "NNPS" : "Plural proper noun", "PDT" : "Predeterminer", "POS" : "Possessive ending", "PRP" : "Personal pronoun", "PRP$" : "Possessive pronoun", "RB" : "Adverb", "RBR" : "Comparative adverb", "RBS" : "Superlative adverb", "RP" : "Particle", "SYM" : "Symbol", "TO" : "to", "UH" : "Interjection", "VB" : "Base form Verb", "VBD" : "Past tense verb", "VBG" : "Gerund or present participle verb", "VBN" : "Past participle verb", "VBP" : "Non-3rd person singular present verb", "VBZ" : "3rd person singular present verb", "WDT" : "Wh-determiner", "WP" : "Wh-pronoun", "WP$" : "Possessive wh-pronoun", "WRB" : "Wh-adverb", "." : "Punctuation", "," : "Punctuation"}
-
 while True:
-	a=ws.recv()
-	d=json.loads(json.loads(a)["data"])
-	title = h.unescape(d["titleEncodedFancy"])
-	site = d["siteBaseHostAddress"]
-	link = d["url"]
-
-	print title
 
 	tokens = nltk.word_tokenize(title)
 	tagged = nltk.pos_tag(tokens)
@@ -53,3 +65,5 @@ while True:
 
 	cursor.execute(cmd, (title, site, link, tags))
 	cnx.commit()
+
+cnx.close()
