@@ -55,3 +55,5 @@ while True:
 
 	cursor.execute(cmd, (title, site, link, tags))
 	cnx.commit()
+
+cnx.close()
